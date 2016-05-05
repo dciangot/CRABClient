@@ -1,0 +1,82 @@
+#!/usr/bin/env python 
+#pylint: disable-msg=C0103
+"""
+crab GUI v.0.1
+
+Structure:
+
+"""
+import sys
+from PyQt4.QtGui import QFileDialog, QTableWidgetItem, \
+                        QApplication, QWidget, QColor, QTableWidget
+from CRABAPI.RawCommand import crabCommand
+
+
+def get_task_from_dir(window):
+    """
+    Get task dir using QFileDialog
+    """
+    taskdir = str(QFileDialog.getExistingDirectory(window, "Select Directory"))
+    res = crabCommand('status', dir=taskdir)
+    return res['status'], res['jobList']
+
+#def get_user_tasks():
+#    """
+#    Get latest user tasks
+#    """
+#    return
+
+def task_table(jobs, qtable):
+    """
+    Fill table with job statuses
+    """
+    for index, job in enumerate(jobs):
+        print index
+        qtable.setItem(index, 0, QTableWidgetItem(str(job[1])))
+        qtable.setItem(index, 1, QTableWidgetItem(str(job[0])))
+        if job[0] == 'finished':
+            qtable.item(index, 1).setBackground(QColor(100, 200, 100))
+        else:
+            qtable.item(index, 1).setBackground(QColor(200, 100, 100))
+
+#def option_bar(window):
+#    """
+#    Design option bar
+#    """
+#    return
+
+class crabGUI(object): #pylint: disable-msg=R0903
+    """
+    crab Main GUI
+    """
+    def __init__(self):
+        """
+        initialize GUI
+        """
+        self.null = open("/dev/null", "w")
+        self.app = QApplication(sys.argv)
+        self.window = QWidget()
+        self.table = QTableWidget()
+
+    def __call__(self):
+        """
+        gui call
+        """
+        self.null = open("/dev/null", "w")
+        sys.stdout = self.null
+
+        status, list_job = get_task_from_dir(self.window)
+
+        self.table.setWindowTitle("Status: "+status)
+        self.table.resize(400, 250)
+        self.table.setRowCount(len(list_job))
+        self.table.setColumnCount(2)
+        self.table.verticalHeader().hide()
+        task_table(list_job, self.table)
+        self.table.show()
+
+        self.window.hide()
+
+        sys.exit(self.app.exec_())
+
+
