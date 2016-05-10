@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 #pylint: disable-msg=C0103
 """
 crab GUI v.0.1
@@ -31,7 +31,7 @@ def task_table(jobs, qtable):
     Fill table with job statuses
     """
     for index, job in enumerate(jobs):
-        print index
+        print(index)
         qtable.setItem(index, 0, QTableWidgetItem(str(job[1])))
         qtable.setItem(index, 1, QTableWidgetItem(str(job[0])))
         if job[0] == 'finished':
